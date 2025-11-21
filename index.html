@@ -25,22 +25,40 @@
       padding: 40px 20px;
     }
     .ip {
-      font-size: 1.5em;
-      margin: 20px 0;
+      font-size: 1.2em;
+      margin: 15px 0;
       color: #4CAF50;
+    }
+    .ip-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    button {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .copied {
+      color: #4CAF50;
+      font-size: 0.9em;
+      margin-top: 5px;
+      display: none;
     }
     footer {
       background: #333;
       color: #aaa;
       padding: 15px;
       margin-top: 40px;
-    }
-    a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
     }
     ul {
       list-style: none;
@@ -58,9 +76,20 @@
 
   <div class="content">
     <p>Welcome to our Minecraft server!</p>
-    <p class="ip">Server IP: <strong>play.gameqube.buzz</strong></p>
-    <p class="ip">If not working: <strong>ebhscraft.progamer.me</strong></p>
-    <button onclick="copyIP()">Click to Copy IP</button>
+
+    <!-- First IP -->
+    <div class="ip-container">
+      <p class="ip">Server IP: <strong id="ip1">play.gameqube.buzz</strong></p>
+      <button onclick="copyIP('ip1')">Copy</button>
+    </div>
+
+    <!-- Second IP -->
+    <div class="ip-container">
+      <p class="ip">If not working: <strong id="ip2">ebhscraft.progamer.me</strong></p>
+      <button onclick="copyIP('ip2')">Copy</button>
+    </div>
+
+    <p id="copy-msg" class="copied">✅ Copied to clipboard!</p>
     
     <h2>Rules</h2>
     <ul>
@@ -68,7 +97,8 @@
       <li>2. Griefing or stealing allowed</li>
       <li>3. Have fun!</li>
     </ul>
-      <h2>Members</h2>
+
+    <h2>Members</h2>
     <ul>
       <li>DaChazen1</li>
       <li>HashGpro something</li>
@@ -82,5 +112,17 @@
   <footer>
     <p>&copy; 2025 Gameqube Server | Powered by Netlify</p>
   </footer>
+
+  <script>
+    function copyIP(id) {
+      const ip = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(ip).then(() => {
+        const msg = document.getElementById("copy-msg");
+        msg.style.display = "block";
+        msg.textContent = "✅ Copied: " + ip;
+        setTimeout(() => { msg.style.display = "none"; }, 2000);
+      });
+    }
+  </script>
 </body>
 </html>
