@@ -68,6 +68,36 @@
     ul li {
       margin: 8px 0;
     }
+    /* Player list styles */
+    .playerlist {
+      max-width: 600px;
+      margin: 30px auto;
+      text-align: left;
+    }
+    .player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+    .player img {
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-online {
+      color: #4CAF50;
+    }
+    .status-offline {
+      color: #f44336;
+    }
   </style>
 </head>
 <body>
@@ -91,14 +121,7 @@
     </div>
     <p id="copy-msg" class="copied">✅ Copied to clipboard!</p>
     <h2>Version: 1.21.10</h2>
-    <div>
-        <img src="https://cdn.pixabay.com/photo/2013/07/12/19/25/minecraft-154749_1280.png"  id="server-icon"/>
-        <div>
-            <h1 id="server-ip">play.myserver.com</h1>
-            <span id="motd">A minecraft server</span>
-            <div><span id="player-count">290</span> Players Online</div>
-        <div>
-</body>
+
     <h2>Rules</h2>
     <ul>
       <li>1. Be respectful to others</li>
@@ -115,6 +138,11 @@
       <li>          </li>
       <li>          </li>
     </ul>
+
+    <h2>Online Players</h2>
+    <div class="playerlist" id="playerlist">
+      <p>Loading player list...</p>
+    </div>
   </div>
 
   <footer>
@@ -131,6 +159,50 @@
         setTimeout(() => { msg.style.display = "none"; }, 2000);
       });
     }
+
+    async function fetchPlayers() {
+      try {
+        // Try first IP
+        let res = await fetch('https://api.mcsrvstat.us/2/play.gameqube.buzz');
+        let data = await res.json();
+
+        // If server offline, try second IP
+        if (!data.online) {
+          res = await fetch('https://api.mcsrvstat.us/2/ebhscraft.progamer.me');
+          data = await res.json();
+        }
+
+        const container = document.getElementById('playerlist');
+        container.innerHTML = '';
+
+        if (!data.players || !data.players.list || data.players.list.length === 0) {
+          container.innerHTML = '<p>No players online</p>';
+          return;
+        }
+
+        data.players.list.forEach(player => {
+          const row = document.createElement('div');
+          row.className = 'player';
+          row.innerHTML = `
+            <div class="info">
+              <img src="https://mc-heads.net/avatar/${player}/32" alt="${player}">
+              <span>${player}</span>
+            </div>
+            <div>
+              <span class="status-online">🟢 Online</span>
+              <span>Ping: ${data.debug?.ping || 'N/A'}ms</span>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('playerlist').innerHTML = '<p>Error loading player list</p>';
+      }
+    }
+
+    setInterval(fetchPlayers, 5000); // refresh every 5s
+    fetchPlayers();
   </script>
 </body>
 </html>
